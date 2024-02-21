@@ -4,7 +4,6 @@ import requests
 
 def response(message):
     message = message.lower()
-    print("called")
     match message:
         case '-hello':
             return "Hello there!"
@@ -21,6 +20,7 @@ def response(message):
         case '-toss':
             return random.choice(['Heads', 'Tails'])
         case _:
+            print('called')
             r = requests.post(
             "http://localhost:11434/api/generate",
             json={
@@ -30,6 +30,6 @@ def response(message):
             },
         ).json()
             print(r)
-            return r['output']
+            return r['response']
 
     

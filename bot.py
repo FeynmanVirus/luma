@@ -4,22 +4,25 @@ from discord.ui import Button, View
 from discord.ext import commands
 from config import TOKEN 
 import callbacks
-
+import threading
+import img
+from discord.ext import tasks
 # intents and bot command
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="-", intents=intents)
+client = discord.Client(intents=intents)
 
 def run_bot():
     # TOKEN = "MTE1MTEwOTk4MTQyMTE3NDc5NQ.GpWDfF.ozwe7j-rEToYUQp3BC66eZ0O8bBU78LQPnEVMc"
 
     
-    client = discord.Client(intents=intents)
-
     
+
     @client.event
     async def on_ready():
         print(f"{client.user} is running.")
+        weather_report.start()
 
     @client.event
     async def on_message(message):
@@ -70,6 +73,17 @@ async def escrow(ctx):
     except Exception:
         return Exception
 
+@tasks.loop(minutes=30)
+async def weather_report():
+    content = img.main()
+    print("weather report")
+    channel = client.get_channel(1190689101293310102)
+    
+    embed=discord.Embed(title=content['date'],description=content['content'],color=0x9208ea)
+
+    await channel.send(embed=embed)
+
+
 @bot.command()
 async def google(ctx, search):
     # try:
@@ -85,3 +99,4 @@ async def google(ctx, search):
     await ctx.channel.send(f"Results for {search}", view=view)
     # except Exception:
     #     return Exception
+
